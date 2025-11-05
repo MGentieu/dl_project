@@ -24,7 +24,7 @@ Upon successful completion of this project, you will have demonstrated proficien
 
 ### **3. Project Tracks (Choose One)**
 
-Select **one** of the following engineering tracks. Each track description below details the datasets, required metrics, and relevant course chapters.
+Select **all** of the following engineering tracks. Each track description below details the datasets, required metrics, and relevant course chapters.
 
 -   #### **Track A: Computer Vision - Image Classification**
     -   **Business Case:** Develop a model for automated quality control or retail product categorization.
