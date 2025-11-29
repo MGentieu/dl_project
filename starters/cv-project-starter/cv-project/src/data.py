@@ -36,16 +36,13 @@ def _build_transforms(img_size: int):
     return train_tf, val_tf
 
 class SubsetWithTransform(Subset):
-    """Wrapper pour appliquer un transform spécifique à un Subset."""
-    def __init__(self, subset, transform=None):
+    def __init__(self, subset, transform):
         super().__init__(subset.dataset, subset.indices)
         self.transform = transform
 
     def __getitem__(self, idx):
-        x, y = super().__getitem__(idx)
-        if self.transform:
-            x = self.transform(x)
-        return x, y
+        img, label = super().__getitem__(idx)
+        return self.transform(img), label
 
 
 def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
@@ -69,30 +66,28 @@ def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
         val_set   = datasets.CIFAR10(root=str(root), train=False, download=True, transform=val_tf)
         classes = train_set.classes
     elif cfg["data"]["dataset"].lower() == "caltech101":
+
+    # Charge le dataset SANS transform ici !
         base_dataset = datasets.Caltech101(
             root=str(root),
             download=True,
-            transform=None  # plus de transform ici
+            transform=None
         )
 
         val_ratio = float(cfg["data"]["val_split"])
         n_val = max(1, int(len(base_dataset) * val_ratio))
         n_train = len(base_dataset) - n_val
+
         train_subset, val_subset = random_split(base_dataset, [n_train, n_val])
 
-        # Applique le transform correctement sur les Subsets
+        # Applique explicitement les bons transforms aux Subset
         train_set = SubsetWithTransform(train_subset, train_tf)
         val_set   = SubsetWithTransform(val_subset, val_tf)
 
-        # récupère les classes depuis le dataset original
-        classes = getattr(base_dataset, "classes", None)
-        if classes is None:
-            classes = getattr(base_dataset, "categories", None)
-        if classes is None:
-            classes = getattr(base_dataset, "target_categories", None)
-        if classes is None:
-            raise AttributeError(f"Impossible de récupérer les classes du dataset {base_dataset}")
-
+        # Récupère les classes
+        classes = getattr(base_dataset, "classes", None) \
+            or getattr(base_dataset, "categories", None) \
+            or getattr(base_dataset, "target_categories", None)
 
     elif cfg["data"]["dataset"].lower() == "imagefolder":
         full = datasets.ImageFolder(root=str(root), transform=train_tf)
