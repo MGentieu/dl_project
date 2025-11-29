@@ -3,7 +3,7 @@ seed: 42
 output_dir: outputs
 
 data:
-  dataset: caltech101         # caltech101 | imagefolder
+  dataset: caltech101
   root: ./data
   img_size: 224
   batch_size: 128
