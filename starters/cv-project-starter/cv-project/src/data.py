@@ -66,14 +66,18 @@ def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
         n_train = len(train_set) - n_val
         train_set, val_set = random_split(train_set, [n_train, n_val])
         val_set.dataset.transform = val_tf
-        if hasattr(train_set.dataset, "classes"):
-            classes = train_set.dataset.classes
-        elif hasattr(train_set.dataset, "categories"):
-            classes = train_set.dataset.categories
-        elif hasattr(train_set.dataset, "target_categories"):
-            classes = train_set.dataset.target_categories
-        else:
-            raise AttributeError("Impossible de récupérer les classes du dataset")
+        # récupère le dataset original même après random_split
+        base_dataset = train_set.dataset
+
+        # récupère les classes selon l’attribut disponible
+        classes = getattr(base_dataset, "classes", None)
+        if classes is None:
+            classes = getattr(base_dataset, "categories", None)
+        if classes is None:
+            classes = getattr(base_dataset, "target_categories", None)
+        if classes is None:
+            raise AttributeError(f"Impossible de récupérer les classes du dataset {base_dataset}")
+
 
     elif cfg["data"]["dataset"].lower() == "imagefolder":
         full = datasets.ImageFolder(root=str(root), transform=train_tf)
