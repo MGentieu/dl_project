@@ -57,7 +57,18 @@ def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
         val_set   = datasets.CIFAR10(root=str(root), train=False, download=True, transform=val_tf)
         classes = train_set.classes
     elif cfg["data"]["dataset"].lower() == "caltech101":
-        base_dataset = datasets.Caltech101(root=str(root), download=True, transform=train_tf)
+        base_dataset = datasets.Caltech101(
+            root=str(root),
+            download=True,
+            transform=transforms.Compose([
+                transforms.Lambda(lambda img: img.convert("RGB")),  # force RGB
+                transforms.Resize(img_size),
+                transforms.RandomResizedCrop(img_size, scale=(0.6,1.0)),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
+            ])
+        )
         val_ratio = float(cfg["data"]["val_split"])
         n_val = max(1, int(len(base_dataset) * val_ratio))
         n_train = len(base_dataset) - n_val
