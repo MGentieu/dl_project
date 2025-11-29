@@ -17,26 +17,24 @@ IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD  = (0.229, 0.224, 0.225)
 
 def _build_transforms(img_size: int):
-    """Build torchvision transforms for training and validation.
-
-    Training gets light augmentation (resize, crop, flip) to encourage
-    generalisation, while validation receives deterministic resizing so that
-    metrics remain stable across runs.
-    """
+    """Build torchvision transforms for training and validation."""
     train_tf = transforms.Compose([
         transforms.Resize(img_size),
         transforms.RandomResizedCrop(img_size, scale=(0.6, 1.0)),
         transforms.RandomHorizontalFlip(),
+        transforms.Lambda(lambda img: img.convert("RGB")),  # ← force 3 canaux pour caltech101
         transforms.ToTensor(),
         transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
     ])
     val_tf = transforms.Compose([
         transforms.Resize(img_size),
         transforms.CenterCrop(img_size),
+        transforms.Lambda(lambda img: img.convert("RGB")),  # ← force 3 canaux pour caltech101
         transforms.ToTensor(),
         transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
     ])
     return train_tf, val_tf
+
 
 def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
     """Create dataloaders and metadata according to the configuration dictionary.
