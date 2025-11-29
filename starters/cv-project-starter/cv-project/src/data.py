@@ -59,17 +59,14 @@ def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
         val_set   = datasets.CIFAR10(root=str(root), train=False, download=True, transform=val_tf)
         classes = train_set.classes
     elif cfg["data"]["dataset"].lower() == "caltech101":
-        train_set = datasets.Caltech101(root=str(root), download=True, transform=train_tf)
-        # Caltech101 n’a PAS d'argument train=True/False → il faut splitter manuellement
+        base_dataset = datasets.Caltech101(root=str(root), download=True, transform=train_tf)
         val_ratio = float(cfg["data"]["val_split"])
-        n_val = max(1, int(len(train_set) * val_ratio))
-        n_train = len(train_set) - n_val
-        train_set, val_set = random_split(train_set, [n_train, n_val])
+        n_val = max(1, int(len(base_dataset) * val_ratio))
+        n_train = len(base_dataset) - n_val
+        train_set, val_set = random_split(base_dataset, [n_train, n_val])
         val_set.dataset.transform = val_tf
-        # récupère le dataset original même après random_split
-        base_dataset = train_set.dataset
 
-        # récupère les classes selon l’attribut disponible
+        # récupère les classes du dataset original
         classes = getattr(base_dataset, "classes", None)
         if classes is None:
             classes = getattr(base_dataset, "categories", None)
@@ -77,7 +74,6 @@ def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
             classes = getattr(base_dataset, "target_categories", None)
         if classes is None:
             raise AttributeError(f"Impossible de récupérer les classes du dataset {base_dataset}")
-
 
     elif cfg["data"]["dataset"].lower() == "imagefolder":
         full = datasets.ImageFolder(root=str(root), transform=train_tf)
