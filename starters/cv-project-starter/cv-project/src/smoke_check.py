@@ -15,7 +15,7 @@ from data import build_dataloaders
 from model import build_model
 
 
-def run_smoke(cfg_path: str = "configs/cv_cifar10_fast.yaml") -> Path:
+def run_smoke(cfg_path) -> Path:
     cfg = load_yaml(cfg_path)
     set_seed(cfg["seed"])
     device = get_device()
@@ -54,5 +54,8 @@ def run_smoke(cfg_path: str = "configs/cv_cifar10_fast.yaml") -> Path:
 
 
 if __name__ == "__main__":
-    path = run_smoke()
+    import sys
+    cfg_path = sys.argv[1] if len(sys.argv) > 1 else "configs/cv_cifar10_fast.yaml"
+    path = run_smoke(cfg_path)
     print(f"Smoke check succeeded. Metrics written to {path}.")
+
