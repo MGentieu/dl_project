@@ -10,7 +10,7 @@ ImageNet normalization so pretrained weights behave as expected.
 from pathlib import Path
 from typing import Tuple
 import torch
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader, random_split, Subset
 from torchvision import datasets, transforms
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -34,6 +34,18 @@ def _build_transforms(img_size: int):
         transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
     ])
     return train_tf, val_tf
+
+class SubsetWithTransform(Subset):
+    """Wrapper pour appliquer un transform spécifique à un Subset."""
+    def __init__(self, subset, transform=None):
+        super().__init__(subset.dataset, subset.indices)
+        self.transform = transform
+
+    def __getitem__(self, idx):
+        x, y = super().__getitem__(idx)
+        if self.transform:
+            x = self.transform(x)
+        return x, y
 
 
 def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
@@ -60,22 +72,19 @@ def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
         base_dataset = datasets.Caltech101(
             root=str(root),
             download=True,
-            transform=transforms.Compose([
-                transforms.Lambda(lambda img: img.convert("RGB")),  # force RGB
-                transforms.Resize(img_size),
-                transforms.RandomResizedCrop(img_size, scale=(0.6,1.0)),
-                transforms.RandomHorizontalFlip(),
-                transforms.ToTensor(),
-                transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
-            ])
+            transform=None  # plus de transform ici
         )
+
         val_ratio = float(cfg["data"]["val_split"])
         n_val = max(1, int(len(base_dataset) * val_ratio))
         n_train = len(base_dataset) - n_val
-        train_set, val_set = random_split(base_dataset, [n_train, n_val])
-        val_set.dataset.transform = val_tf
+        train_subset, val_subset = random_split(base_dataset, [n_train, n_val])
 
-        # récupère les classes du dataset original
+        # Applique le transform correctement sur les Subsets
+        train_set = SubsetWithTransform(train_subset, train_tf)
+        val_set   = SubsetWithTransform(val_subset, val_tf)
+
+        # récupère les classes depuis le dataset original
         classes = getattr(base_dataset, "classes", None)
         if classes is None:
             classes = getattr(base_dataset, "categories", None)
@@ -83,6 +92,7 @@ def build_dataloaders(cfg) -> Tuple[DataLoader, DataLoader, int, list]:
             classes = getattr(base_dataset, "target_categories", None)
         if classes is None:
             raise AttributeError(f"Impossible de récupérer les classes du dataset {base_dataset}")
+
 
     elif cfg["data"]["dataset"].lower() == "imagefolder":
         full = datasets.ImageFolder(root=str(root), transform=train_tf)
