@@ -1,22 +1,19 @@
-task: cv_classification
-seed: 42
 data:
-  dataset: caltech101
   root: ./data
   img_size: 224
   batch_size: 128
-  num_workers: 2   # Réduit pour éviter les erreurs sur certains environnements locaux
+  num_workers: 2
   val_split: 0.1
 
-model:
-  arch: resnet18
-  pretrained: true
+# Paramètres spécifiques aux deux étapes
+phase1:
+  epochs: 15
+  lr: 1.0e-3
   freeze_backbone: true
 
-train:
+phase2:
   epochs: 10
-  optimizer: adam
-  lr: 1.0e-4
-  scheduler: cosine
+  lr: 1.0e-5  # 0.00001
+  freeze_backbone: false
 
 output_dir: outputs
