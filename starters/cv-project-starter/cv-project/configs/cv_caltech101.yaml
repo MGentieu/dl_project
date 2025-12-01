@@ -13,9 +13,9 @@ model:
   pretrained: true
 
 train:
-  epochs: 8
+  epochs: 10
   optimizer: adam
-  lr: 1.0e-3
+  lr: 1.0e-4
   scheduler: cosine
 
 output_dir: outputs
