@@ -6,7 +6,7 @@ data:
   val_split: 0.2
 
 phase_test:
-  epochs: 5
+  epochs: 3
   lr: 1.0e-3
   freeze_backbone: true
 # Paramètres spécifiques aux deux étapes
