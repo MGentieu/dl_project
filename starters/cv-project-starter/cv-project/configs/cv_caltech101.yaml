@@ -3,8 +3,12 @@ data:
   img_size: 224
   batch_size: 128
   num_workers: 2
-  val_split: 0.1
+  val_split: 0.2
 
+phase_test:
+  epochs: 5
+  lr: 1.0e-3
+  freeze_backbone: true
 # Paramètres spécifiques aux deux étapes
 phase1:
   epochs: 15
