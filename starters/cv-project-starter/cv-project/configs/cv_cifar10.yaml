@@ -16,13 +16,13 @@ model:
   freeze_backbone: false    # true = train only final layer
 
 train:
-  epochs: 3
+  epochs: 5
   optimizer: sgd            # adamw | sgd
   lr: 1.0e-2
   weight_decay: 5.0e-4
   momentum: 0.9             # only if sgd
   scheduler: cosine         # cosine | none
-  t_max: 3                 # cosine: number of epochs
+  t_max: 5                # cosine: number of epochs
 
 early_stopping:
   patience: 5
