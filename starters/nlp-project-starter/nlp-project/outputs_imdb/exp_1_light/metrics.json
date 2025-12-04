@@ -1,5 +1,5 @@
 {
-  "best_val_f1_macro": 0.43052393198013306,
+  "best_val_f1_macro": 0.8499959707260132,
   "label_names": [
     "Negative",
     "Positive"
