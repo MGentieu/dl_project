@@ -74,6 +74,20 @@ def _load_ag_news():
     label_names = ["World","Sports","Business","Sci/Tech"]
     return (train_texts, train_labels), (test_texts, test_labels), label_names
 
+def _load_imdb():
+    from datasets import load_dataset
+    # Chargement du dataset IMDb
+    ds = load_dataset("imdb")
+    
+    train_texts = ds["train"]["text"]
+    train_labels = ds["train"]["label"]
+    test_texts = ds["test"]["text"]
+    test_labels = ds["test"]["label"]
+    
+    # IMDb est binaire : 0 = Négatif, 1 = Positif
+    label_names = ["Negative", "Positive"]
+    return (train_texts, train_labels), (test_texts, test_labels), label_names
+
 def _load_csv(path: str, text_col: str, label_col: str, delimiter: str):
     import csv
     texts, labels = [], []
@@ -103,6 +117,12 @@ def build_loaders(cfg):
         (tr_texts, tr_labels), (te_texts, te_labels), label_names = _load_ag_news()
         # split small val from train
         val_size = max(2000, int(0.1*len(tr_texts)))
+        tr_texts_, va_texts = tr_texts[:-val_size], tr_texts[-val_size:]
+        tr_labels_, va_labels = tr_labels[:-val_size], tr_labels[-val_size:]
+    elif mode == "imdb":
+        (tr_texts, tr_labels), (te_texts, te_labels), label_names = _load_imdb()
+        # Split Train / Val (ex: 10% pour la validation)
+        val_size = max(2000, int(0.1 * len(tr_texts)))
         tr_texts_, va_texts = tr_texts[:-val_size], tr_texts[-val_size:]
         tr_labels_, va_labels = tr_labels[:-val_size], tr_labels[-val_size:]
     elif mode == "csv":
