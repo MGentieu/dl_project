@@ -1,0 +1,38 @@
+task: nlp_text_classification
+seed: 42
+output_dir: outputs_imdb
+
+data:
+  dataset: imdb              # Option ajoutée dans data.py
+  max_vocab: 40000           # Augmenté pour IMDb
+  min_freq: 3                # Filtrer les mots très rares
+  max_len: 256               # Troncation standard pour LSTM
+  batch_size: 64
+  num_workers: 2
+
+  # Pas de CSV nécessaire ici
+  train_csv: null
+  val_csv: null
+  test_csv: null
+  text_col: text
+  label_col: label
+
+model:
+  emb_dim: 128
+  hidden_dim: 256
+  num_layers: 1
+  bidirectional: true
+  dropout: 0.3               # Léger dropout pour régularisation
+
+train:
+  epochs: 8                  # IMDb converge souvent plus vite que AG News
+  optimizer: adamw
+  lr: 1.0e-3
+  weight_decay: 1.0e-2
+  momentum: 0.9
+  scheduler: none
+  t_max: 8
+
+early_stopping:
+  patience: 3                # Patience réduite
+  min_delta: 0.0
