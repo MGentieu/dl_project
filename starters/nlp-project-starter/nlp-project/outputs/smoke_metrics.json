@@ -1,0 +1,6 @@
+{
+  "loss": 1.3951404094696045,
+  "batch_size": 64,
+  "seq_len": 69,
+  "num_classes": 4
+}

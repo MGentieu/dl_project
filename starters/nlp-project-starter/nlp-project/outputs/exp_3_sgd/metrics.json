@@ -1,0 +1,9 @@
+{
+  "best_val_f1_macro": 0.8323373794555664,
+  "label_names": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ]
+}
