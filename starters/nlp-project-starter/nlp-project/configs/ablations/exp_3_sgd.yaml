@@ -1,0 +1,33 @@
+data:
+  batch_size: 64
+  dataset: ag_news
+  delimiter: ','
+  label_col: label
+  max_len: 256
+  max_vocab: 30000
+  min_freq: 2
+  num_workers: 2
+  test_csv: null
+  text_col: text
+  train_csv: null
+  val_csv: null
+early_stopping:
+  min_delta: 0.0
+  patience: 5
+model:
+  bidirectional: true
+  dropout: 0.2
+  emb_dim: 128
+  hidden_dim: 256
+  num_layers: 1
+output_dir: outputs/exp_3_sgd
+seed: 42
+task: nlp_text_classification
+train:
+  epochs: 10
+  lr: 0.01
+  momentum: 0.9
+  optimizer: sgd
+  scheduler: none
+  t_max: 10
+  weight_decay: 0.01
