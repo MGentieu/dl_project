@@ -1,0 +1,7 @@
+{
+  "best_val_f1_macro": 0.8499959707260132,
+  "label_names": [
+    "Negative",
+    "Positive"
+  ]
+}

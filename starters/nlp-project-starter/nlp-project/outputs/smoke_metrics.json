@@ -1,6 +1,6 @@
 {
-  "loss": 1.3951404094696045,
+  "loss": 1.3802978992462158,
   "batch_size": 64,
-  "seq_len": 69,
+  "seq_len": 68,
   "num_classes": 4
 }
