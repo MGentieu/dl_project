@@ -1,0 +1,15 @@
+{
+  "best_val_acc": 0.9579000473022461,
+  "classes": [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck"
+  ]
+}
