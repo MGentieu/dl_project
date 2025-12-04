@@ -1,0 +1,32 @@
+data:
+  batch_size: 64
+  dataset: imdb
+  label_col: label
+  max_len: 256
+  max_vocab: 40000
+  min_freq: 3
+  num_workers: 2
+  test_csv: null
+  text_col: text
+  train_csv: null
+  val_csv: null
+early_stopping:
+  min_delta: 0.0
+  patience: 3
+model:
+  bidirectional: true
+  dropout: 0.3
+  emb_dim: 128
+  hidden_dim: 256
+  num_layers: 1
+output_dir: outputs_imdb/exp_2_high_lr
+seed: 42
+task: nlp_text_classification
+train:
+  epochs: 8
+  lr: 0.005
+  momentum: 0.9
+  optimizer: adamw
+  scheduler: none
+  t_max: 8
+  weight_decay: 0.01
