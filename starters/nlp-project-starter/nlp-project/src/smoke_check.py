@@ -9,7 +9,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
 
 from data import build_loaders
-from train import LSTMClassifier  # Assurez-vous que l'import correspond à votre structure
+from train import LSTMClassifier
 
 def load_yaml(path):
     with open(path, 'r') as f:
@@ -21,14 +21,12 @@ def run_smoke(config_path="configs/nlp_agnews.yaml"):
     # 1. Load Config
     cfg = load_yaml(config_path)
     
-    # --- FIX: Force num_workers à 0 pour le smoke test ---
-    # Cela évite les blocages liés au multiprocessing sur un test rapide
+    # Force num_workers=0 pour éviter les blocages sur le smoke test
     if 'data' in cfg:
         print("Note: Forcing num_workers=0 for smoke test to prevent hanging.")
         cfg['data']['num_workers'] = 0
-    # -----------------------------------------------------
 
-    # 2. Build Loaders (Attention: peut prendre du temps pour IMDb le temps de tokeniser)
+    # 2. Build Loaders
     print("Building loaders and vocabulary... (Please wait, tokenizing large text can take ~30-60s)")
     train_loader, val_loader, test_loader, vocab, num_classes, label_names = build_loaders(cfg)
     
@@ -45,6 +43,8 @@ def run_smoke(config_path="configs/nlp_agnews.yaml"):
 
     # 4. Init Model
     print("Initializing model...")
+    
+    # --- FIX ICI : Ajout de pad_idx ---
     model = LSTMClassifier(
         vocab_size=len(vocab.itos),
         emb_dim=cfg["model"]["emb_dim"],
@@ -52,7 +52,8 @@ def run_smoke(config_path="configs/nlp_agnews.yaml"):
         num_layers=cfg["model"]["num_layers"],
         bidirectional=cfg["model"]["bidirectional"],
         dropout=cfg["model"]["dropout"],
-        num_classes=num_classes
+        num_classes=num_classes,
+        pad_idx=vocab.pad_idx  # <--- L'argument manquant qui causait l'erreur
     )
 
     # 5. Forward Pass
@@ -88,5 +89,4 @@ def run_smoke(config_path="configs/nlp_agnews.yaml"):
     return metrics_path
 
 if __name__ == "__main__":
-    # Example usage
     run_smoke()
