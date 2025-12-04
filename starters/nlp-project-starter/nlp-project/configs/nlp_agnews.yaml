@@ -26,14 +26,14 @@ model:
   dropout: 0.2
 
 train:
-  epochs: 6
+  epochs: 10
   optimizer: adamw           # adamw | sgd
   lr: 1.0e-3
   weight_decay: 1.0e-2
   momentum: 0.9              # only if sgd
   scheduler: none            # none | cosine
-  t_max: 6                   # for cosine
+  t_max: 10                  # for cosine
 
 early_stopping:
-  patience: 3
+  patience: 5
   min_delta: 0.0
