@@ -1,0 +1,23 @@
+{
+  "val_acc": 0.9579000473022461,
+  "macro_precision": 0.957871309869252,
+  "macro_recall": 0.9579000000000001,
+  "macro_f1": 0.9578402952533416,
+  "weighted_precision": 0.9578713098692522,
+  "weighted_recall": 0.9579,
+  "weighted_f1": 0.9578402952533417,
+  "accuracy": 0.9579,
+  "num_samples": 10000,
+  "classes": [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck"
+  ]
+}

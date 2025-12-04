@@ -1,0 +1,6 @@
+{
+  "loss": 2.648369789123535,
+  "batch_size": 64,
+  "num_classes": 10,
+  "device": "cpu"
+}

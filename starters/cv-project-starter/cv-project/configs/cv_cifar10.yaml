@@ -22,7 +22,7 @@ train:
   weight_decay: 5.0e-4
   momentum: 0.9             # only if sgd
   scheduler: cosine         # cosine | none
-  t_max: 5                # cosine: number of epochs
+  t_max: 5               # cosine: number of epochs
 
 early_stopping:
   patience: 5
