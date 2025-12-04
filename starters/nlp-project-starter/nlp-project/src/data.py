@@ -6,6 +6,7 @@ from collections import Counter, defaultdict
 import torch
 from torch.utils.data import Dataset, DataLoader, random_split
 from utils import tokenize
+import random
 
 SPECIALS = {"<pad>":0, "<unk>":1}
 
@@ -112,6 +113,7 @@ def build_loaders(cfg):
     max_len   = int(cfg["data"]["max_len"])
     bs        = int(cfg["data"]["batch_size"])
     nw        = int(cfg["data"]["num_workers"])
+    seed      = int(cfg.get("seed", 42))
 
     if mode == "ag_news":
         (tr_texts, tr_labels), (te_texts, te_labels), label_names = _load_ag_news()
@@ -121,7 +123,17 @@ def build_loaders(cfg):
         tr_labels_, va_labels = tr_labels[:-val_size], tr_labels[-val_size:]
     elif mode == "imdb":
         (tr_texts, tr_labels), (te_texts, te_labels), label_names = _load_imdb()
-        # Split Train / Val (ex: 10% pour la validation)
+        
+        # --- FIX: SHUFFLE BEFORE SPLITTING ---
+        # IMDb arrive trié (Neg then Pos). Si on coupe sans mélanger, 
+        # le set de validation ne contient qu'une seule classe.
+        combined = list(zip(tr_texts, tr_labels))
+        random.seed(seed)
+        random.shuffle(combined)
+        tr_texts, tr_labels = zip(*combined)
+        # -------------------------------------
+
+        # Split Train / Val (10% pour la validation)
         val_size = max(2000, int(0.1 * len(tr_texts)))
         tr_texts_, va_texts = tr_texts[:-val_size], tr_texts[-val_size:]
         tr_labels_, va_labels = tr_labels[:-val_size], tr_labels[-val_size:]
