@@ -1,5 +1,5 @@
 # Machine Learning Project
-
+> Auuthors : Gouesse Sixtine & Gentieu Martin
 ## **À l'attention du correcteur :** 
 
 #### **Pour chaque notebook :**
