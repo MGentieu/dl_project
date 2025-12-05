@@ -3,6 +3,7 @@ from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from collections import Counter, defaultdict
 import random  # <--- Ajouté pour le shuffle
+import multiprocessing
 
 import torch
 from torch.utils.data import Dataset, DataLoader, random_split
@@ -93,12 +94,23 @@ def _load_imdb():
 
 def _load_yahoo():
     from datasets import load_dataset
-    import multiprocessing
     
-    # Chargement du dataset complet
+    print("Loading Yahoo dataset...")
+    # On charge le dataset
     ds = load_dataset("yahoo_answers_topics")
     
-    # Fonction de concaténation
+    # --- OPTIMISATION RAM CRITIQUE ---
+    # Le dataset fait 1.4M de lignes. Charger tout en RAM fait crasher Colab.
+    # On prend un sous-ensemble (200k) suffisant pour le Deep Learning et qui tient en mémoire.
+    TRAIN_SIZE = 200000 
+    TEST_SIZE = 10000
+    
+    print(f"Subsampling Yahoo to {TRAIN_SIZE} train examples to fit in RAM...")
+    
+    # On mélange et on sélectionne AVANT de traiter le texte pour gagner du temps
+    train_ds = ds["train"].shuffle(seed=42).select(range(TRAIN_SIZE))
+    test_ds = ds["test"].shuffle(seed=42).select(range(TEST_SIZE))
+
     def concat_text(examples):
         return {
             "text": [
@@ -107,22 +119,15 @@ def _load_yahoo():
             ]
         }
 
-    # Optimisation : On utilise plusieurs cœurs pour le mapping car le dataset est gros (1.4M lignes)
-    # On supprime les colonnes inutiles pour économiser la RAM
-    num_proc = multiprocessing.cpu_count()
-    print(f"Processing Yahoo dataset with {num_proc} processes...")
-    
-    ds = ds.map(
-        concat_text, 
-        batched=True, 
-        num_proc=num_proc, 
-        remove_columns=["id", "question_title", "question_content", "best_answer"]
-    )
+    # num_proc=1 est CRITIQUE sur Colab pour éviter l'erreur 137 (OOM) lors du mapping
+    print("Processing text fields (this might take 1-2 minutes)...")
+    train_ds = train_ds.map(concat_text, batched=True, num_proc=1, remove_columns=["id", "question_title", "question_content", "best_answer"])
+    test_ds = test_ds.map(concat_text, batched=True, num_proc=1, remove_columns=["id", "question_title", "question_content", "best_answer"])
 
-    train_texts = ds["train"]["text"]
-    train_labels = ds["train"]["topic"]
-    test_texts = ds["test"]["text"]
-    test_labels = ds["test"]["topic"]
+    train_texts = train_ds["text"]
+    train_labels = train_ds["topic"]
+    test_texts = test_ds["text"]
+    test_labels = test_ds["topic"]
     
     label_names = [
         "Society & Culture", "Science & Mathematics", "Health", "Education & Reference",
@@ -179,7 +184,7 @@ def build_loaders(cfg):
     
     elif mode == "yahoo":
         (tr_texts, tr_labels), (te_texts, te_labels), label_names = _load_yahoo()
-        val_size = int(0.1 * len(tr_texts)) 
+        val_size = int(0.1 * len(tr_texts))
         tr_texts_, va_texts = tr_texts[:-val_size], tr_texts[-val_size:]
         tr_labels_, va_labels = tr_labels[:-val_size], tr_labels[-val_size:]
 
