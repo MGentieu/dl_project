@@ -1,0 +1,33 @@
+data:
+  batch_size: 64
+  dataset: yahoo
+  delimiter: ','
+  label_col: label
+  max_len: 256
+  max_vocab: 40000
+  min_freq: 2
+  num_workers: 2
+  test_csv: null
+  text_col: text
+  train_csv: null
+  val_csv: null
+early_stopping:
+  min_delta: 0.0
+  patience: 3
+model:
+  bidirectional: true
+  dropout: 0.3
+  emb_dim: 128
+  hidden_dim: 256
+  num_layers: 1
+output_dir: outputs_yahoo/baseline
+seed: 42
+task: nlp_text_classification
+train:
+  epochs: 6
+  lr: 0.0008
+  momentum: 0.9
+  optimizer: adamw
+  scheduler: none
+  t_max: 6
+  weight_decay: 0.01
