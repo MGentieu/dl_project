@@ -153,6 +153,11 @@ def _labels_to_ids(labels: List[str]):
     return y, uniq
 
 def build_loaders(cfg):
+
+    tr_texts, tr_labels = [], []
+    te_texts, te_labels = [], []
+    va_texts, va_labels = [], []
+
     mode = cfg["data"]["dataset"]
     max_vocab = int(cfg["data"]["max_vocab"])
     min_freq = int(cfg["data"]["min_freq"])
