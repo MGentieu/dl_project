@@ -91,6 +91,46 @@ def _load_imdb():
     label_names = ["Negative", "Positive"]
     return (train_texts, train_labels), (test_texts, test_labels), label_names
 
+def _load_yahoo():
+    from datasets import load_dataset
+    import multiprocessing
+    
+    # Chargement du dataset complet
+    ds = load_dataset("yahoo_answers_topics")
+    
+    # Fonction de concaténation
+    def concat_text(examples):
+        return {
+            "text": [
+                (t if t else "") + " " + (c if c else "") + " " + (a if a else "")
+                for t, c, a in zip(examples["question_title"], examples["question_content"], examples["best_answer"])
+            ]
+        }
+
+    # Optimisation : On utilise plusieurs cœurs pour le mapping car le dataset est gros (1.4M lignes)
+    # On supprime les colonnes inutiles pour économiser la RAM
+    num_proc = multiprocessing.cpu_count()
+    print(f"Processing Yahoo dataset with {num_proc} processes...")
+    
+    ds = ds.map(
+        concat_text, 
+        batched=True, 
+        num_proc=num_proc, 
+        remove_columns=["id", "question_title", "question_content", "best_answer"]
+    )
+
+    train_texts = ds["train"]["text"]
+    train_labels = ds["train"]["topic"]
+    test_texts = ds["test"]["text"]
+    test_labels = ds["test"]["topic"]
+    
+    label_names = [
+        "Society & Culture", "Science & Mathematics", "Health", "Education & Reference",
+        "Computers & Internet", "Sports", "Business & Finance", "Entertainment & Music",
+        "Family & Relationships", "Politics & Government"
+    ]
+    return (train_texts, train_labels), (test_texts, test_labels), label_names
+
 def _load_csv(path: str, text_col: str, label_col: str, delimiter: str):
     import csv
     texts, labels = [], []
@@ -134,6 +174,12 @@ def build_loaders(cfg):
         # -------------------------------------
 
         val_size = max(2000, int(0.1 * len(tr_texts)))
+        tr_texts_, va_texts = tr_texts[:-val_size], tr_texts[-val_size:]
+        tr_labels_, va_labels = tr_labels[:-val_size], tr_labels[-val_size:]
+    
+    elif mode == "yahoo":
+        (tr_texts, tr_labels), (te_texts, te_labels), label_names = _load_yahoo()
+        val_size = int(0.1 * len(tr_texts)) 
         tr_texts_, va_texts = tr_texts[:-val_size], tr_texts[-val_size:]
         tr_labels_, va_labels = tr_labels[:-val_size], tr_labels[-val_size:]
 
