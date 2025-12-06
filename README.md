@@ -1,5 +1,5 @@
 # Machine Learning Project
-
+> Authors : Gouesse Sixtine & Gentieu Martin
 ## **À l'attention du correcteur :** 
 
 #### **Pour chaque notebook :**
@@ -25,6 +25,7 @@ Pour les notebooks sur Colab, voici les liens directs (*le dépôt est public do
 - ```AG_news_notebook.ipynb``` [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MGentieu/dl_project/blob/main/starters/nlp-project-starter/nlp-project/notebooks/AG_news_notebook.ipynb)
 - ```IMDb_notebook.ipynb``` [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MGentieu/dl_project/blob/main/starters/nlp-project-starter/nlp-project/notebooks/IMDb_notebook.ipynb) 
 - ```yahoo_notebook.ipynb``` [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MGentieu/dl_project/blob/main/starters/nlp-project-starter/nlp-project/notebooks/yahoo_notebook.ipynb)
+**ATTENTION :** Des erreurs d'affichage sont présentes pour ce notebook. Le lien est fonctionnel mais le notebook s'affiche très mal dans github.
 
 #### TRACK D - Tabular/Time-Series - Regression :
 - ```mlp_california_housing.ipynb``` [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MGentieu/dl_project/blob/main/starters/ts-project-starter/ts-project/notebooks/mlp_california_housing.ipynb)

@@ -153,6 +153,11 @@ def _labels_to_ids(labels: List[str]):
     return y, uniq
 
 def build_loaders(cfg):
+
+    tr_texts, tr_labels = [], []
+    te_texts, te_labels = [], []
+    va_texts, va_labels = [], []
+
     mode = cfg["data"]["dataset"]
     max_vocab = int(cfg["data"]["max_vocab"])
     min_freq = int(cfg["data"]["min_freq"])
@@ -213,8 +218,7 @@ def build_loaders(cfg):
 
     train_ds = SimpleTextDataset(tr_texts_, tr_labels_, vocab, max_len)
     val_ds = SimpleTextDataset(va_texts, va_labels, vocab, max_len)
-    test_ds = SimpleTextDataset(te_texts, te_labels, vocab, max_len) if (mode == "ag_news" or mode == "imdb" or cfg["data"]["test_csv"]) else None
-
+    test_ds = SimpleTextDataset(te_texts, te_labels, vocab, max_len) if (mode == "ag_news" or mode == "imdb" or mode == "yahoo" or cfg["data"]["test_csv"]) else None
     train_loader = DataLoader(train_ds, batch_size=bs, shuffle=True, num_workers=nw, collate_fn=lambda b: collate_pad(b, vocab.pad_idx))
     val_loader = DataLoader(val_ds, batch_size=bs, shuffle=False, num_workers=nw, collate_fn=lambda b: collate_pad(b, vocab.pad_idx))
     test_loader = DataLoader(test_ds, batch_size=bs, shuffle=False, num_workers=nw, collate_fn=lambda b: collate_pad(b, vocab.pad_idx)) if test_ds else None
